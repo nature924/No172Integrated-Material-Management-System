@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.WuziChuruInoutDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.wuzi_churu_inout_uuid_number as wuziChuruInoutUuidNumber
+        ,a.wuzi_churu_inout_name as wuziChuruInoutName
+        ,a.wuzi_churu_inout_types as wuziChuruInoutTypes
+        ,a.wuzi_churu_inout_content as wuziChuruInoutContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.WuziChuruInoutView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM wuzi_churu_inout  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.wuziChuruInoutUuidNumber != '' and params.wuziChuruInoutUuidNumber != null and params.wuziChuruInoutUuidNumber != 'null' ">
+                and a.wuzi_churu_inout_uuid_number like CONCAT('%',#{params.wuziChuruInoutUuidNumber},'%')
+            </if>
+            <if test=" params.wuziChuruInoutName != '' and params.wuziChuruInoutName != null and params.wuziChuruInoutName != 'null' ">
+                and a.wuzi_churu_inout_name like CONCAT('%',#{params.wuziChuruInoutName},'%')
+            </if>
+            <if test="params.wuziChuruInoutTypes != null and params.wuziChuruInoutTypes != ''">
+                and a.wuzi_churu_inout_types = #{params.wuziChuruInoutTypes}
+            </if>
+            <if test=" params.wuziChuruInoutContent != '' and params.wuziChuruInoutContent != null and params.wuziChuruInoutContent != 'null' ">
+                and a.wuzi_churu_inout_content like CONCAT('%',#{params.wuziChuruInoutContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
